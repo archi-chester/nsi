@@ -1,0 +1,171 @@
+<div class="card-header font-weight-bold">
+    <div class="row">
+        <!--    Требуется сохранение    -->
+        <div class="col-1">
+            <i *ngIf="selectedTree && selectedTree.changed"
+               class="fa fa-2x fa-save base-style-outline-over-red-without-hover icon-for-changeable-state"
+               title="Есть несохраненные изменения"></i>
+        </div>
+        <!--    Текст для шапки    -->
+        <div #pathWidth class="col-10 text-center">
+            {{selectedPath == null ? ' Выберите документ для работы ' : selectedPath}}
+        </div>
+        <!--    Кнопка выхода из режима сохранения    -->
+        <div class="col-1 text-right edit-button">
+            <!--    Требуется сохранение    -->
+            <button *ngIf="selectedTree && !isChanged"
+                    title="Выйти из режима редактирования"
+                    class="ml-0 btn btn-sm base-style-outline-over-red"
+                    (click)="unsetChangeableBit()">
+                <i class="fa fa-ban"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div *ngIf="selectedTree"
+        class="container-flex card-body p-2 hidden-overflow-x">
+    <form name="selectedTree" #nsiForm="ngForm" (ngModelChange)="setChangedBit(true)">
+        <!--    Имя карточки    -->
+        <div class="input-group mt-2 mb-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text base-style-withouthover">Наименование:</span>
+            </div>
+            <!--    отработка по энтеру    -->
+            <input name="cardInput" #cardInput class="form-control" type="text"
+                   (change)="changeTextForName($event.target)"
+                   (keypress.enter)="changeTextForName($event.target)"
+                   [(ngModel)]="selectedTree.name">
+        </div>
+        <!--    Линия отбива    -->
+        <hr class="w-100">
+        <div class="base-style-outline-withouthover">
+            <!--    Поле ввода описания карточки    -->
+            <textarea name="cardDescription" class="form-control" rows="2"
+                      (ngModelChange)="setChangedBit(true)"
+                      [(ngModel)]=selectedTree.description></textarea>
+
+        </div>
+        <!--    Линия отбива    -->
+        <hr class="w-100">
+        <!--    выводим файлы, если они есть    -->
+        <div *ngIf="selectedTree && selectedTree.files && selectedTree.files.length && selectedTree.files.length > 0">
+            <h5 class="base-style-outline-withouthover">Список файлов:</h5>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let file of selectedTree.files; let i=index" class="list-group-item mr-2">
+                <!--   Заголовок файла   -->
+                <div class="base-style-outline-withouthover">
+                    <div class="input-group mt-2 mb-2">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text base-style-withouthover">Заголовок:</span>
+                        </div>
+                        <!--    Поле ввода заголовка файла    -->
+                        <input class="form-control" type="text" name="header+{{i}}"
+                               (ngModelChange)="setChangedBit(true)"
+                               [(ngModel)]=file.header>
+                     </div>
+                </div>
+                  <hr>
+                <div class="base-style-outline-withouthover">
+                        <!--    Поле ввода описания файла    -->
+                        <textarea class="form-control" rows="1" name="summary+{{i}}"
+                                  (ngModelChange)="setChangedBit(true)"
+                                  [(ngModel)]=file.summary></textarea>
+
+                </div>
+                <div class="btn-group mb-2 mr-1" role="group">
+                    <!--     Открыть файл в программе   -->
+                    <button type="button" class="btn btn-sm base-style-outline mt-2"
+                    (click)="openFileInDefaultProgram(file.id, file.orig_name)">
+                        {{file.orig_name}}
+                    </button>
+                    <!--    Отработка скачивания файла    -->
+                    <button type="button" class="btn btn-sm base-style mt-2"
+                            (click)="downloadFileById(file.id, file.orig_name)">
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <!--    Отработка удаления файла    -->
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-2"
+                            (click)="deleteFileById(file.id, file.orig_name)">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+              </li>
+            </ul>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-3">
+            <span class="base-style-outline-over-red ml-2 mt-2" *ngIf="selectedTree && selectedTree.isLoadingFile">
+                ИДЕТ ЗАГРУЗКА ФАЙЛА...
+            </span>
+        </div>
+        <div class="col-9 text-right">
+        <!--    Работа с файлами    -->
+            <input #fileLoader  type="file" (change)="onFilePreloaded($event.target)" hidden>
+            <div class="btn-group mb-2 mt-1 text-right">
+                <!--  Перед сохранением проверяем, что имя не пустое  -->
+                <!--    Добавление файла    -->
+                <button type="file" class="btn base-style"
+                        (click)="fileLoader.click()">Добавить файл</button>
+                <!--Отработка скачивания всех файлов-->
+                <button *ngIf="selectedTree && selectedTree.files && selectedTree.files.length > 0"
+                        class="btn base-style-outline"
+                        (click)="downloadAllFilesByNodeId(selectedTree.id, selectedTree.name)">
+                    Скачать все файлы архивом
+                </button>
+                <!--    Удаление всех файлов    -->
+                <button *ngIf="selectedTree && selectedTree.files && selectedTree.files.length > 0"
+                        class="btn btn-outline-danger"
+                        (click)="deleteAllFilesFromNode(selectedTree.id, selectedTree.name)">
+                    Удалить все файлы
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--    выводим тэги    -->
+        <!--    Тэги    -->
+    <div class="input-group mt-2 mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text base-style-withouthover">Ключевые слова:</span>
+        </div>
+        <!--    отработка по энтеру    -->
+        <input #tagsInput class="form-control" type="text" (keyup.enter)="changeTextForTags($event.target)">
+        <div class="input-group-append">
+            <button class="btn fa fa-plus base-style" (click)="changeTextForTags(tagsInput)"></button>
+        </div>
+    </div>
+    <!--    Список тэгов    -->
+    <div *ngIf="selectedTree.tags != undefined && selectedTree.tags.length > 0">
+        <div class="btn-group mb-2 mr-1" role="group" *ngFor="let tag of selectedTree.tags">
+            <!--    Отработка нажатия на тэг    -->
+            <button type="button" class="btn btn-sm base-style-outline"
+                    (click)="changeTextForSearch(tag)"
+            >{{tag}}
+            </button>
+            <!--    Отработка удаления тэга    -->
+            <button type="button" class="btn btn-sm base-style"
+                    (click)="removeTagFromTaglist(tag)">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <hr>
+    <!--    Кнопки    -->
+    <div class="text-right">
+        <div class="btn-group mb-2 mt-1">
+            <!--    Сохранение изменений    -->
+            <button *ngIf="selectedTree.changed && selectedTree.name.length > 0"
+                    class="btn base-style"
+                    (click)="updateNode()">Сохранить</button>
+            <!--    Обнуление изменений, передаем ид выбранной ноды и данные из фильтра    -->
+            <button  *ngIf="selectedTree.changed && selectedTree.name.length > 0"
+                    class="btn base-style-outline"
+                    (click)="rollbackNode(tagsInput)">Обновить</button>
+            <!--    Удаление ноды    -->
+            <button class="btn btn-outline-danger"
+                    (click)="deleteNode()">Удалить</button>
+        </div>
+    </div>
+</div>
+
+

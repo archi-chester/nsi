@@ -1,0 +1,214 @@
+/*   главное окно   */
+/*   здесь же базовый цвет   */
+.container-fluid {
+    --nsi-basic-color: rgb(135, 186, 230);
+    --nsi-filter-height: 85px;
+    --nsi-card-height: 50px;
+    overflow-y: auto;
+}
+/*  Подсветка фильтра    */
+.active-filter {
+    border-color: rgb(9, 175, 9);
+    background-color: rgb(187, 255, 177);
+}
+/*   Базовый стиль - кнопки, иконки, текст - Белый шрифт с жирными буквами и фоном   */
+.base-style {
+    background-color: var(--nsi-basic-color);
+    color: white;
+    font-weight: bold;
+}
+/*   Базовый стиль - при наведении - чуть темнее фон  */
+.base-style:hover {
+    background-color: rgb(71,122, 150);
+    color: white;
+    font-weight: bold;
+}
+/*   Базовый стиль - инверсия - Голубой шрифт и бордер с прозрачным фоном   */
+.base-style-outline {
+    color: var(--nsi-basic-color);
+    background-color: transparent;
+    background-image: none;
+    border-color: var(--nsi-basic-color);
+}
+/*   Базовый стиль - инверсия - Белый шрифт с голубым фоном   */
+.base-style-outline:hover {
+    background-color: var(--nsi-basic-color);
+    color: white;
+}
+/*   Базовый стиль без изменения при наведении   */
+.base-style-withouthover {
+    background-color: var(--nsi-basic-color);
+    color: white;
+    font-weight: bold;
+}
+/*   Базовый инвертированный без изменения при наведении   */
+.base-style-outline-withouthover {
+    color: var(--nsi-basic-color);
+    background-color: transparent;
+    background-image: none;
+    border-color: var(--nsi-basic-color);
+}
+/*   Инвертированный для иконок с голубым основным цветом и белым фоном (бордер под цвет фона)   */
+.base-style-outline-over-sky {
+    color: var(--nsi-basic-color);
+    background-color: white;
+    background-image: none;
+    border-color: white;
+}
+/*   Инверсия base-style-outline-over-sky бордер без изменений*/
+.base-style-outline-over-sky:hover {
+    color: white;
+    background-color: var(--nsi-basic-color);
+    background-image: none;
+    border-color: white;
+}
+/*   Инвертированный для иконок с бордовым основным цветом и белым фоном (бордер под цвет фона)   */
+.base-style-outline-over-red {
+    color: darkred;
+    background-color: white;
+    background-image: none;
+    border-color: white;
+}
+/*   Инверсия base-style-outline-over-red бордер без изменений*/
+.base-style-outline-over-red:hover {
+    color: white;
+    background-color: darkred;
+    background-image: none;
+    border-color: white;
+}
+/*   Инвертированный для иконок с зеленым основным цветом и белым фоном (бордер под цвет фона)   */
+.base-style-outline-over-green {
+    color: green;
+    background-color: white;
+    background-image: none;
+    border-color: white;
+}
+/*   Инверсия base-style-outline-over-green бордер без изменений*/
+.base-style-outline-over-green:hover {
+    color: white;
+    background-color: green;
+    background-image: none;
+    border-color: white;
+}
+/*   Инвертированный для иконок с синим основным цветом и белым фоном (бордер под цвет фона)   */
+.base-style-outline-over-blue {
+    color: blue;
+    background-color: white;
+    background-image: none;
+    border-color: white;
+}
+/*   Инверсия base-style-outline-over-blue бордер без изменений*/
+.base-style-outline-over-blue:hover {
+    color: white;
+    background-color: blue;
+    background-image: none;
+    border-color: white;
+}
+/*   Инвертированный для иконок с бордовым основным цветом и белым фоном (бордер под цвет фона)   */
+.base-style-outline-over-red-without-hover {
+    color: darkred;
+    background-color: var(--nsi-basic-color);
+    background-image: none;
+}
+/*   Курсор в виде пальца для кнопок, иконок   */
+.clickable {
+    cursor: pointer;
+}
+/*   Левая карточка   */
+.card-left {
+    min-width: 20% !important;
+    white-space: nowrap;
+    /*overflow-x: hidden !important;*/
+}
+/*   Правая карточка   */
+.card-right {
+    overflow-x: hidden !important;
+}
+/*   Базовый для заголовка карточки   */
+.card-header {
+    background-color: var(--nsi-basic-color);
+    color: white;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    height: var(--nsi-card-height);
+}
+/*   тело карточки   */
+.card-body {
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    height: calc(100% - var(--nsi-card-height));
+    white-space: nowrap;
+}
+/*   Кнопка смены режимов карточки   */
+.edit-button {
+    min-width: 30px;
+}
+/*   Левая карточка   */
+.flex-left {
+    height: calc(100% - var(--nsi-filter-height) - 65px);
+    min-width: 18% !important;
+    /*overflow-x: hidden !important;*/
+}
+/*   Правая карточка   */
+.flex-right {
+    height: calc(100% - var(--nsi-filter-height) - 65px);
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+}
+/*  Ширина поля фильтр и под ним  */
+.filter-width {
+    width: 100px;
+}
+/*  Зеленая клетка фильтра    */
+.green-style {
+    background-color: rgb(102, 230, 13);
+    color: white;
+    font-weight: bold;
+}
+/*  Делаем невидимые иконки для файла чтоб красивый отступ    */
+.hidden-icon {
+    color: transparent !important;
+    background-color: transparent !important;
+}
+/*  Скрываем ползунок по горизонтали    */
+.hidden-overflow-x {
+    overflow-x: hidden !important;
+}
+/*  Скрываем ползунок по вертикали    */
+.hidden-overflow-y {
+    overflow-y: hidden !important;
+}
+/*  Убираем маркеры в маркерованом списке    */
+.list-style-no-marker {
+    list-style-type: none;
+}
+/*   Ползунок для изменения ширины   */
+.resize-line {
+    height: calc(100% - var(--nsi-filter-height) - 65px);
+    border-radius: 2px;
+    width: 4px;
+    background-color: var(--nsi-basic-color);
+    color: var(--nsi-basic-color);
+    cursor: col-resize;
+}
+/*   Базовый инвертированный без изменения при наведении для выбранных элементов  */
+.selected-item {
+    /*   Оставлено специально, для последующих работ   */
+    color: var(--nsi-basic-color);
+    background-color: transparent;
+    background-image: none;
+    border-color: var(--nsi-basic-color);
+}
+/*  Зашиваем высоту фильтра    */
+.filter-height {
+    min-height: var(--nsi-filter-height);
+}
+/*  Иконка для статуса сохранения    */
+.icon-for-changeable-state {
+    font-size: 18pt !important;
+}
+/*  Символ отрисовки линий в дереве    */
+.offsetSymbol {
+    width: 20px !important;
+    color: lightgray;
+}

@@ -1,0 +1,81 @@
+<div class="card-header font-weight-bold">
+    <div class="row">
+        <div class="col-1">
+            <!--    Выравниваем, чтобы не скакал заголовок    -->
+        </div>
+        <div #pathWidth class="col-10 text-center">
+           {{selectedPath == null ? ' Выберите документ для работы ' : selectedPath}}
+        </div>
+        <div class="col-1 text-right edit-button">
+            <!--    Сменить  карточки на изменяемый    -->
+            <button *ngIf="selectedTree"
+                    title="Войти в режим сохранения"
+                    class="btn btn-sm base-style-outline-over-sky text-right"
+                    (click)="setChangeableBit()">
+                <i class="fa fa-pencil"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div *ngIf="selectedTree" class="container-flex card-body">
+    <!--    Имя карточки    -->
+    <div *ngIf="selectedTree.name" class="base-style-outline-withouthover">
+        {{selectedTree.name}}
+        <!--    Линия отбива    -->
+        <hr class="w-100">
+    </div>
+    <!--    Описание карточки    -->
+    <div *ngIf="selectedTree.description" class="base-style-outline-withouthover">
+        {{selectedTree.description}}
+        <!--    Линия отбива    -->
+        <hr class="w-100">
+    </div>
+    <!--    выводим файлы, если они есть    -->
+    <div *ngIf="selectedTree.files && selectedTree.files.length > 0">
+        <h5 class="base-style-outline-withouthover">Список файлов:</h5>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let file of selectedTree.files" class="list-group-item mr-2">
+            <div class="base-style-outline-withouthover">{{file.header}}</div>
+              <hr>
+            <div class="base-style-outline-withouthover">{{file.summary}}</div>
+            <div class="btn-group mb-2 mr-1" role="group">
+                <!--     Открыть файл в программе   -->
+                <button type="button" class="btn btn-sm base-style-outline mt-2"
+                        (click)="openFileInDefaultProgram(file.id, file.orig_name)">
+                    {{file.orig_name}}
+                </button>
+                <!--    Отработка скачивания файла    -->
+                <button type="button" class="btn btn-sm base-style mt-2"
+                        (click)="downloadFileById(file.id, file.orig_name)">
+                    <i class="fa fa-arrow-down"></i>
+                </button>
+            </div>
+          </li>
+        </ul>
+        <div class="text-right">
+            <div class="btn-group mb-1 mt-2">
+                <!--Отработка скачивания всех файлов-->
+                <!--Будет реализовано в дальнейшем-->
+                <button class="btn base-style" (click)="downloadAllFilesByNodeId(selectedTree.id, selectedTree.name)">
+                    Скачать все файлы архивом
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--    выводим тэги    -->
+    <div *ngIf="selectedTree.tags && selectedTree.tags.length > 0">
+        <div class="input-group mb-2">
+            <div class="btn btn-sm btn-sm base-style mr-2">
+                Тэги:
+            </div>
+            <!--    в функцию передаем тэг  -->
+            <button
+                class="btn btn-sm base-style-outline mr-1"
+                *ngFor="let tag of selectedTree.tags"
+                 (click)="changeTextForSearch(tag)"
+                >{{tag}}
+            </button>
+        </div>
+    </div>
+</div>
+

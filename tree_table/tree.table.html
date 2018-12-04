@@ -1,0 +1,60 @@
+<div *ngIf="tree != null && tree.length > 0; else emptyTree">
+    <div *ngFor="let treeItem of tree; let indexItem = index">
+        <div class="row ml-auto mr-auto flex-nowrap">
+            <!--    Отрисовываем символы отступов    -->
+            <div class="offsetSymbol" *ngFor="let offsetElement of currentOffsetList">
+                    {{offsetElement ? ' ' : '║'}}
+            </div>
+            <!--    Отрисовываем особый первый символ в трее    -->
+            <div *ngIf="indexItem == 0 && currentOffsetList.length == 0; else firstLineInTree" >
+                <div class="offsetSymbol">
+                    ╔
+                </div>
+            </div>
+            <!--    Отрисовываем обычный первый символ в трее    -->
+            <ng-template #firstLineInTree>
+                <div class="offsetSymbol">
+                    {{indexItem + 1 === tree.length ? '╚' : '╠'}}
+                </div>
+            </ng-template>
+            <!--    Это файл    -->
+            <div class="clickable"
+                    (click)="openItem(treeItem)"
+                    [ngClass]="{ 'selected-item' : selectedTree != null && treeItem.id === selectedTree.id }">
+                <!--    Плюсик    -->
+                <i class="fa"
+                   [ngClass]="{'selected-item' : selectedTree != null && treeItem.id === selectedTree.id,
+                               'fa-plus-square-o mr-1': treeItem.children && treeItem.children.length > 0 && !treeItem.isOpened,
+                               'fa-minus-square-o mr-1': treeItem.children && treeItem.children.length > 0 && treeItem.isOpened}">
+                </i>
+                <!--    Иконка    -->
+                <i class="fa"
+                   [ngClass]="{'selected-item' : selectedTree != null && treeItem.id === selectedTree.id,
+                               'fa-file-o': (!treeItem.children && treeItem.id) || (treeItem.children.length == 0),
+                               'fa-folder': !treeItem.isOpened && treeItem.children && treeItem.children.length > 0,
+                               'fa-folder-open': treeItem.isOpened && treeItem.children && treeItem.children.length > 0}">
+                </i>
+            </div>
+            <div class="clickable ml-1"
+                 (click)="selectItem(treeItem)"
+                 [ngClass]="{ 'selected-item' : selectedTree != null && treeItem.id === selectedTree.id }">
+                <!--    Имя    -->
+                    {{treeItem.name}}
+            </div>
+        </div>
+        <!--    отображать детей    -->
+        <div class="row ml-auto mr-auto" *ngIf="treeItem.children != null && treeItem.children.length > 0 && treeItem.isOpened">
+            <!--    Отправляем последняя ли нода в списке    -->
+            <tree-table
+                    [isEndingNode]="indexItem + 1 === tree.length"
+                    [tree]="treeItem.children"
+                    [topOffsetList]="currentOffsetList">
+            </tree-table>
+        </div>
+    </div>
+</div>
+<ng-template #emptyTree>
+        <h4>
+            данные отсутствуют
+        </h4>
+</ng-template>

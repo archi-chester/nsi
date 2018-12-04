@@ -1,0 +1,165 @@
+<!--    базовый контейнер, здесь обрабатываем перерисовку при ресайзе столбцов    -->
+<!--    здесь же отшибаем правую кнопку - по ней деселект    -->
+<div
+     class="container-fluid d-flex flex-column w-100 pl-0 pr-1"
+     (mousemove)="resizeOnMouseMove($event.pageX)"
+     (mouseup)="cancelMoving()"
+     (mouseleave)="cancelMoving()"
+     (contextmenu)="setChangeableBit(!isChangeable)"
+    >
+    <div class="w-100 mt-2 flex-row text-center header filter-height">
+        <!--    Поле для поиска    -->
+        <!--    Фильтр    -->
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <!--    В фильтре срабатывает подсветка, если он активен    -->
+                <span class="input-group-text base-style-withouthover filter-width text-center"
+                >Фильтр:</span>
+            </div>
+            <!--  версия с динамическим изменением  -->
+            <!--  keyup отрабатывает, если количество символов или пустое или больше 2, нажатие по ентеру - всегда   -->
+            <input #searchInput
+                   class="form-control"
+                   type="text"
+                   [(ngModel)]="textForSearch"
+                   [ngClass]="{'active-filter': isSearching}"
+                   (keyup)="$event.target.value.trim().length === 0 || $event.target.value.trim().length > 2 ?
+                        changeTextForSearch($event.target.value) : true;"
+                   (keyup.enter)="changeTextForSearch($event.target.value)">
+            <div class="input-group-append">
+                <!--  в функцию поиска передаем значение из инпута фильтра  -->
+                <button
+                        class="btn fa fa-search base-style"
+                        (click)="changeTextForSearch(searchInput.value)">
+                </button>
+                <!--    кнопка отмены    -->
+                <button  *ngIf="textForSearch.length > 0"
+                        class="btn btn-outline-danger"
+                         (click)="changeTextForSearch()">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!--    Строка под поиском    -->
+        <div class="d-flex">
+            <div class="filter-width">
+                <!--    Найдено    -->
+                <span *ngIf="isSearching && docResults"
+                     class="base-style-outline filter-width">
+                    Найдено: {{docResults}}
+                </span>
+            </div>
+            <!--    Автотэги    -->
+            <div *ngIf="suggestions && suggestions.length > 0">
+                <!--    Найдено    -->
+                <div class="input-group mb-2">
+                    <button
+                            class="btn btn-sm base-style-outline mr-1"
+                            *ngFor="let autoTag of suggestions"
+                            (click)="changeTextForSearch(autoTag, isShowedLeavesForSearch)"
+                    >{{autoTag}}
+                    </button>
+                </div>
+            </div>
+            <!--    Чекер    -->
+            <div
+                    class="form-check mb-1 base-style-outline-withouthover ml-auto">
+                <!--    включаем или нет поиск с листьями    -->
+                <input
+                        #searchCheck type="checkbox" class="form-check-input base-style"
+                        (click)="changeTextForSearch(searchInput.value, searchCheck.checked)"
+                       id="searchCheck" [(ngModel)]="isShowedLeavesForSearch">
+                <label
+                        class="form-check-label"
+                        for="searchCheck">
+                    отображать листья в найденом
+                </label>
+            </div>
+        </div>
+    </div>
+    <!--    ##################    -->
+    <!--    Основная программа    -->
+    <div  class="d-flex flex-row hidden-overflow-x">
+        <!--    #########    -->
+        <!--    Левый DIV    -->
+        <div class="d-flex container-flex flex-left card hidden-overflow-x"
+             [ngStyle]="{'width': leftFieldWidth + '%'}">
+            <div class="card-header font-weight-bold">
+                <!--    Кнопки    -->
+                <div class="row">
+                    <!--   Количество найденных документов     -->
+                    <div *ngIf="docFull > 0"
+                            class="ml-1">
+                        Отображено {{docAmount >= 0 && isSearching ? docAmount : docFull}} из {{docFull}}
+                    </div>
+                    <div class="ml-auto">
+                        <div class="row mr-auto">
+                            <!--    Убить ноду    -->
+                            <div *ngIf="selectedTree">
+                                <button
+                                        title="Удалить"
+                                        class="btn btn-sm base-style-outline-over-red mr-1"
+                                        (click)="deleteNode()">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                            <!--    Свернуть все каталоги    -->
+                            <button
+                                    title="Свернуть все каталоги"
+                                    class="btn btn-sm base-style-outline-over-sky mr-1"
+                                    (click)="compressTree()">
+                                <i class="fa fa-compress"></i>
+                            </button>
+                            <!--    Развернуть все каталоги    -->
+                            <button
+                                    title="Развернуть все каталоги"
+                                    class="btn btn-sm base-style-outline-over-sky mr-1"
+                                    (click)="expandTree()">
+                                <i class="fa fa-expand"></i>
+                            </button>
+                            <!--    Создать файл / папку    -->
+                            <button
+                                    title="Добавить"
+                                    class="btn btn-sm base-style-outline-over-green mr-1"
+                                    (click)="createNode()">
+                                <i class="fa fa-plus-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--    Вызываем дерево    -->
+            <!--    Через ивенты подтягиваем выбранную ноду, путь к ней текстом и список ИД до нее   -->
+            <div class="d-flex container-flex p-2 card-body">
+                <tree-table *ngIf="tree"
+                            [isEndingNode]="null"
+                            [tree]="tree"
+                            [topOffsetList]="[]">
+                </tree-table>
+            </div>
+        </div>
+        <!--    ***********************************************************************************    -->
+        <!--    DIV граница ползунок    -->
+        <div class="resize-line ml-2 mr-2"
+             (mousedown)="resizeOnMouseDown()">
+        </div>
+        <!--    ***********************************************************************************    -->
+        <!--    ##########    -->
+        <!--    Правый DIV    -->
+        <div class="d-flex container-flex flex-right card hidden-overflow-x"
+              [ngStyle]="{'width': 100 - leftFieldWidth + '%'}">
+            <!--    Режим просмотра    -->
+            <!--    ********************    -->
+            <reading-card  *ngIf="!isChangeable; else changeMode"
+                           (searchTextByTagEvent)="changeTextForSearch($event)">
+            </reading-card>
+            <!--    Режим правки    -->
+            <!--    ********************    -->
+            <ng-template #changeMode>
+                <writing-card
+                               (searchTextByTagEvent)="changeTextForSearch($event)">
+                </writing-card>
+            </ng-template>
+        </div>
+    </div>
+</div>
